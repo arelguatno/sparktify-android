@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/customToolBar"
+    android:background="@color/homeToolbarColor">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/postHomeToolbar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+
+            android:adjustViewBounds="false"
+            android:cropToPadding="false"
+            android:padding="5dp"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/back_icon" />
+
+        <ImageView
+            android:id="@+id/titleLogoImageView"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/logo_mark"/>
+
+        <!--<ImageView-->
+            <!--android:id="@+id/mainHomeToolbar"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:padding="5dp"-->
+            <!--app:srcCompat="@drawable/ic_home"/>-->
+
+    </RelativeLayout>
+
+</androidx.appcompat.widget.Toolbar>

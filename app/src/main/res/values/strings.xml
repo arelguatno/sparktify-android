@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Sparktify</string>
+
+    <string name="facebook_app_id">2007489842840827</string>
+    <string name="fb_login_protocol_scheme">fb2007489842840827</string>
+
+    <string name="title_activity_genres">Genres</string>
+    <string name="title_activity_single_player_game">Song</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_add_favourite">Add to Favourites</string>
+    <string name="action_play_next">Play Next</string>
+    <string name="backdrop_title">GENRES</string>
+    <string name="backdrop_subtitle">This season top 20 albums</string>
+    <string name="title_activity_single_player_activity">Song</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>

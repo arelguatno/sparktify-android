@@ -71,7 +71,7 @@
         <activity
             android:name=".activities.MultiplayerActivity"
             android:configChanges="orientation"
-            android:label="Multiplayer"
+            android:label="Game Show"
             android:parentActivityName=".activities.MultiplayerFindRoom"
             android:screenOrientation="portrait" />
 

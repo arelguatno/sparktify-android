@@ -61,6 +61,7 @@ public class MultiplayerActivity extends BaseActivity {
         city2.put("score", 0);
         city2.put("turn", false);
         city2.put("enable", true);
+        city2.put("chance_used", false);
 
         FirebaseUser user = mAuth.getCurrentUser();
         playerName = user.getDisplayName().replaceAll("\\s+","");
@@ -125,8 +126,6 @@ public class MultiplayerActivity extends BaseActivity {
     }
 
     public void onClick(View v){
-        final MediaPlayer player = MediaPlayer.create(this,R.raw.sounds_effect_button);
-        player.start();
         pressTheButtonToSendSignal();
     }
 

@@ -450,8 +450,6 @@ public class TwoPlayerLocal extends Fragment implements TwoPlayerLocal_ViewEvent
 
     @Override
     public void onDetach() {
-        mp.stop();
-        mp.release();
         super.onDetach();
     }
 

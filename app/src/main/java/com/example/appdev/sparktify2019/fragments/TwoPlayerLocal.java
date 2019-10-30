@@ -118,26 +118,21 @@ public class TwoPlayerLocal extends Fragment implements TwoPlayerLocal_ViewEvent
         // Add songs
         albumSong.clear();
 
-        Song song = new Song("pop5_chandelier", "Chandelier");
+        Song song = new Song("pop1_the_middle", "The Middle");
         albumSong.add(song);
 
-        song = new Song("pop6_dusk_till_dawn", "Dusk Till Dawn");
+        song = new Song("pop2_firework", "Firework");
         albumSong.add(song);
 
-        song = new Song("pop7_all_of_me", "All of me");
+        song = new Song("pop3_call_me_maybe", "Call me maybe");
         albumSong.add(song);
 
-        song = new Song("pop1_congratulations", "Congratulations");
+        song = new Song("pop4_coldplay", "Coldplay");
         albumSong.add(song);
 
-        song = new Song("pop2_hayaan_mo_sila", "Hayaan Mo Sila");
+        song = new Song("pop5_batang_pasaway", "Batang Pasaway");
         albumSong.add(song);
 
-        song = new Song("pop3_humble", "Humble");
-        albumSong.add(song);
-
-        song = new Song("pop4_mask_off", "Mask Off");
-        albumSong.add(song);
 
 
 

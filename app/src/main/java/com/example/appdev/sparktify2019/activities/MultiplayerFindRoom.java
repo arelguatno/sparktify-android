@@ -38,30 +38,30 @@ public class MultiplayerFindRoom extends BaseActivity {
 
 
         db.collection("game_room").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e);
-                            return;
-                        }
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
 
-                        String[] values = new String[value.size()];
-                        int i = 0;
-                        for (QueryDocumentSnapshot doc : value) {
-                            if (doc.getId() != null) {
-                                values[i] = doc.getId();
-                                i +=1;
-                            }
-                        }
-
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                                android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
-                        // Assign adapter to ListView
-                        listView.setAdapter(adapter);
+                String[] values = new String[value.size()];
+                int i = 0;
+                for (QueryDocumentSnapshot doc : value) {
+                    if (doc.getId() != null) {
+                        values[i] = doc.getId();
+                        i += 1;
                     }
-                });
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                        android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+                // Assign adapter to ListView
+                listView.setAdapter(adapter);
+            }
+        });
 
         // ListView Item Click Listener
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -71,10 +71,10 @@ public class MultiplayerFindRoom extends BaseActivity {
                                     int position, long id) {
 
                 // ListView Clicked item index
-                int itemPosition     = position;
+                int itemPosition = position;
 
                 // ListView Clicked item value
-                String  itemValue    = (String) listView.getItemAtPosition(position);
+                String itemValue = (String) listView.getItemAtPosition(position);
 
 
                 Intent intent = new Intent(view.getContext(), MultiplayerActivity.class);

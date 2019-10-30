@@ -36,11 +36,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MultiplayerActivity extends BaseActivity {
+    private static final String TAG = "MultiplayerActivity";
     static String roomName;
     static String playerName;
     TextView yourTurnText;
-
-    private static final String TAG = "MultiplayerActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +63,7 @@ public class MultiplayerActivity extends BaseActivity {
         city2.put("chance_used", false);
 
         FirebaseUser user = mAuth.getCurrentUser();
-        playerName = user.getDisplayName().replaceAll("\\s+","");
+        playerName = getCharacterName().replaceAll("\\s+", "");
 
         db.collection("game_room").document(roomName).collection("players").document(playerName)
                 .set(city)
@@ -112,9 +111,9 @@ public class MultiplayerActivity extends BaseActivity {
                     Log.d(TAG, "Current data: " + snapshot.getData());
                     customButton.setEnabled(snapshot.getBoolean("enable"));
 
-                    if(snapshot.getBoolean("turn")){
+                    if (snapshot.getBoolean("turn")) {
                         yourTurnText.setVisibility(View.VISIBLE);
-                    }else{
+                    } else {
                         yourTurnText.setVisibility(View.GONE);
                     }
 
@@ -125,12 +124,12 @@ public class MultiplayerActivity extends BaseActivity {
         });
     }
 
-    public void onClick(View v){
+    public void onClick(View v) {
         pressTheButtonToSendSignal();
     }
 
-    private void pressTheButtonToSendSignal(){
+    private void pressTheButtonToSendSignal() {
         db.collection("game_room").document(roomName).collection("players").document(playerName)
-                .update("increment",FieldValue.increment(1));
+                .update("increment", FieldValue.increment(1));
     }
 }

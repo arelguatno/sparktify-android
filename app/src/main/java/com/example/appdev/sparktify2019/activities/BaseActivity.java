@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -20,6 +21,9 @@ public class BaseActivity extends AppCompatActivity {
 
     protected FirebaseFirestore db;
     protected FirebaseAuth mAuth;
+    protected FirebaseAnalytics mFirebaseAnalytics;
+
+
 
     public static final String SONG_SPACE = "_";
 
@@ -39,7 +43,7 @@ public class BaseActivity extends AppCompatActivity {
     // Fields
     static final String DB_LAST_LOGIN_FIELD = "lastLogin";
 
-
+    public static String characterName = "";
 
 
     protected void setToFullScreen() {
@@ -78,6 +82,11 @@ public class BaseActivity extends AppCompatActivity {
         return c.getResources().getIdentifier(ImageName, "raw", c.getPackageName());
     }
 
+    public static String getCharacterName() {
+        return characterName;
+    }
 
-
+    public static void setCharacterName(String characterName) {
+        BaseActivity.characterName = characterName;
+    }
 }

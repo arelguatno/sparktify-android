@@ -1,12 +1,21 @@
 package com.example.appdev.sparktify2019.activities;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -21,6 +30,12 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -28,20 +43,25 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 
 public class MainActivity extends BaseActivity implements
-        View.OnClickListener{
+        View.OnClickListener {
     private static final String TAG = "MainActivity";
 
     private CallbackManager mCallbackManager;
@@ -49,6 +69,7 @@ public class MainActivity extends BaseActivity implements
     private GoogleSignInClient mGoogleSignInClient;
 
     private static final int RC_SIGN_IN = 9001;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +96,7 @@ public class MainActivity extends BaseActivity implements
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -114,6 +136,44 @@ public class MainActivity extends BaseActivity implements
             }
         });
         // [END initialize_fblogin]
+
+        // load username
+        loadUserProfile();
+
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+    }
+
+    private void loadUserProfile() {
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DocumentReference docRef = db.collection("users").document(mAuth.getUid());
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            setCharacterName(document.getString("displayName"));
+                        } else {
+                            Log.d(TAG, "No such document");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+
+        }
     }
 
     @Override
@@ -128,17 +188,77 @@ public class MainActivity extends BaseActivity implements
         updateUI(currentUser);
     }
 
+    public void userProfileOnClick(View v) {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.user_profile, null);
+        final EditText displayName = mView.findViewById(R.id.userNameText);
+
+        displayName.setFocusable(true);
+        displayName.setFocusableInTouchMode(true);
+        displayName.requestFocus();
+
+        Button saveButton = mView.findViewById(R.id.saveProfileButton);
+        Button cancelProfileButton = mView.findViewById(R.id.cancelProfileButton);
+
+        mBuilder.setView(mView);
+        mBuilder.setCancelable(false);
+
+        final AlertDialog alertDialog = mBuilder.create();
+
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String dd = displayName.getText().toString();
+                dd = dd.replaceAll("\\s+", "");
+
+                if (!dd.isEmpty()) {
+                    db.collection("users").document(mAuth.getUid())
+                            .update("displayName", dd);
+                    loadUserProfile();
+                    alertDialog.cancel();
+                    Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        cancelProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.cancel();
+            }
+        });
+
+
+        Glide.with(this)
+                .load(mAuth.getCurrentUser().getPhotoUrl())
+                .into((ImageView) mView.findViewById(R.id.imageProfile));
+
+        //ShowDisplayName
+        displayName.setText(getCharacterName());
+        displayName.setSelection(getCharacterName().length());
+        alertDialog.show();
+
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        View v = activity.getCurrentFocus();
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        assert imm != null && v != null;
+        imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
     public void play_button(View view) {
         Intent intent = new Intent(this, GenresActivity.class);
         this.startActivity(intent);
     }
 
-    public void play_multiplayer(View v){
+    public void play_multiplayer(View v) {
         Intent intent = new Intent(this, LocalMultiplayerActivity.class);
         this.startActivity(intent);
     }
 
-    public void play_multiplayer2(View v){
+    public void play_multiplayer2(View v) {
         Intent intent = new Intent(this, MultiplayerFindRoom.class);
         this.startActivity(intent);
     }
@@ -198,6 +318,10 @@ public class MainActivity extends BaseActivity implements
 
                 FirebaseAuth.getInstance().signOut();
                 LoginManager.getInstance().logOut();
+
+                // Google sign out
+                mGoogleSignInClient.signOut();
+
                 updateUI(null);
                 dialog.dismiss();
             }
@@ -312,22 +436,18 @@ public class MainActivity extends BaseActivity implements
     private void updateDBUserLastLogin(FirebaseUser user) {
         db.collection(DB_USERS_COLLECTION_NAME)
                 .document(user.getUid())
-                .update(DB_LAST_LOGIN_FIELD, new Date());
+                .update(DB_LAST_LOGIN_FIELD, System.currentTimeMillis());
     }
 
     private void saveUserInfotoDB(FirebaseUser user, Task<AuthResult> task) {
         // Save user to Firestore
         if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-            User user1 = new User(user.getDisplayName(),
-                    user.getEmail(),
-                    user.getPhotoUrl().toString(),
-                    user.getProviderId(),
-                    user.getUid(),
-                    new Date(),
-                    new Date());
+            // function will trigger automatically
 
-            db.collection(DB_USERS_COLLECTION_NAME)
-                    .document(user.getUid()).set(user1);
+            Bundle params = new Bundle();
+            params.putString("new_user", getCharacterName());
+            params.putString("full_text", "asdasd");
+            mFirebaseAnalytics.logEvent("new_user", params);
 
         } else {
             updateDBUserLastLogin(user);

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.example.appdev.sparktify2019.R;
 import com.example.appdev.sparktify2019.pojos.User;
 import com.facebook.AccessToken;
@@ -78,7 +79,7 @@ public class MainActivity extends BaseActivity implements
         FacebookSdk.sdkInitialize(getApplicationContext());
         setToFullScreen();
         setContentView(R.layout.activity_main);
-
+//        Crashlytics.getInstance().crash(); // Force a crash
 
         findViewById(R.id.imageView).setVisibility(View.GONE);
         findViewById(R.id.imageView3).setVisibility(View.GONE);
@@ -200,6 +201,8 @@ public class MainActivity extends BaseActivity implements
         Button saveButton = mView.findViewById(R.id.saveProfileButton);
         Button cancelProfileButton = mView.findViewById(R.id.cancelProfileButton);
 
+        Button buyPremiumButton = mView.findViewById(R.id.buyPremiumButton);
+
         mBuilder.setView(mView);
         mBuilder.setCancelable(false);
 
@@ -239,13 +242,16 @@ public class MainActivity extends BaseActivity implements
         displayName.setSelection(getCharacterName().length());
         alertDialog.show();
 
-    }
+        buyPremiumButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.cancel();
 
-    public static void hideKeyboard(Activity activity) {
-        View v = activity.getCurrentFocus();
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        assert imm != null && v != null;
-        imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                Intent intent = new Intent(getApplicationContext(), PremiumVersionActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+        });
     }
 
     public void play_button(View view) {
